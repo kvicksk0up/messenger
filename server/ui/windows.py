@@ -5,15 +5,15 @@ from server.ui.server_monitor_ui import Ui_ServerWindow as server_ui_class
 class ServerMonitorWindow(QMainWindow):
     """Server Monitor Window (user interface)"""
     # , parsed_args, server_instance
-    def __init__(self, parent=None):
+    def __init__(self, parsed_args, server_instance, parent=None):
         super().__init__(parent)
-        #self.server_instance = server_instance
-        #self.parsed_args = parsed_args
+        self.server_instance = server_instance
+        self.parsed_args = parsed_args
 
         self.ui = server_ui_class()
         self.ui.setupUi(self)
-        #self.ui.refresh_action.triggered.connect(self.refresh_action)
-        #self.after_start()
+        self.ui.refresh_action.triggered.connect(self.refresh_action)
+        self.after_start()
 
     def closeEvent(self, event):
         """
@@ -36,6 +36,14 @@ class ServerMonitorWindow(QMainWindow):
         self.ui.clients_list.addItems(
             [contact.username for contact in contacts])
 
+    def refresh_action(self):
+        """refresh from menu
+        QAction.triggered only work with direct connect() method,
+        otherwise it will be triggered twice."""
+
+        print('refresh')
+        self.update_clients()
+
     def update_history_messages(self, username):
         """
         Get all events from client's history.
@@ -57,10 +65,3 @@ class ServerMonitorWindow(QMainWindow):
         self.update_history_messages(selected_client)
         self.ui.tabWidgetClients.setCurrentIndex(1)  # set history tab active
 
-    def refresh_action(self):
-        """refresh from menu
-        QAction.triggered only work with direct connect() method,
-        otherwise it will be triggered twice."""
-
-        print('refresh')
-        self.update_clients()
